@@ -1,0 +1,58 @@
+{
+  "name": "@darkwalletrh/dark-exit",
+  "version": "1.0.0",
+  "description": "Withdraw your USDG from the Dark vault without Dark. Talks to one JSON-RPC endpoint of your choosing and to nothing else.",
+  "license": "MIT OR Apache-2.0",
+  "type": "module",
+  "bin": {
+    "dark-exit": "./dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE-MIT",
+    "LICENSE-APACHE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --import tsx --test test/*.test.ts",
+    "web:assets": "node web/prepare-assets.mjs",
+    "web:build": "npm run web:assets && vite build --config web/vite.config.ts web",
+    "web:dev": "npm run web:assets && vite --config web/vite.config.ts web"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.8.0",
+    "@scure/bip32": "^2.4.0",
+    "@scure/bip39": "^2.4.0",
+    "@darkwalletrh/dark-sdk": "github:DarkWalletRH/dark-sdk#v0.4.1"
+  },
+  "peerDependencies": {
+    "viem": "^2"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "typescript": "^7.0.2",
+    "tsx": "^4.23.13",
+    "@types/node": "^22.20.2",
+    "viem": "^2.21.0",
+    "@aztec/bb.js": "5.0.0-nightly.20260522",
+    "@noir-lang/noir_js": "1.0.0-beta.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarkWalletRH/dark-exit.git"
+  },
+  "homepage": "https://darkwallet.cash/docs#exit",
+  "bugs": {
+    "url": "https://github.com/DarkWalletRH/dark-exit/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

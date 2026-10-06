@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Dark — emergency withdrawal</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: #060707; color: #f3f3f0;
+        font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+      }
+      main { max-width: 640px; margin: 0 auto; }
+      h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+      .sub { color: #8a8a86; margin: 0 0 28px; }
+      .panel { background: #0d0f0f; border: 1px solid #1d2020; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+      label { display: block; font-size: 13px; color: #b8b8b4; margin-bottom: 6px; }
+      textarea, input, select {
+        width: 100%; background: #060707; color: #f3f3f0; border: 1px solid #262a2a;
+        border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14px;
+      }
+      textarea { min-height: 76px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; }
+      .row > div { flex: 1 1 180px; }
+      button {
+        background: #f5a0c4; color: #10070b; border: 0; border-radius: 10px;
+        padding: 12px 18px; font: inherit; font-weight: 600; cursor: pointer; margin-top: 14px;
+      }
+      button:disabled { opacity: .5; cursor: default; }
+      button.ghost { background: transparent; color: #f3f3f0; border: 1px solid #262a2a; }
+      pre { white-space: pre-wrap; word-break: break-word; background: #060707; border: 1px solid #1d2020;
+            border-radius: 10px; padding: 14px; font-size: 13px; margin: 14px 0 0; min-height: 40px; }
+      .note { font-size: 13px; color: #8a8a86; }
+      .warn { border-color: #6b4a1f; background: #1c1409; color: #e8c58a; padding: 12px 14px; border-radius: 10px;
+              border-width: 1px; border-style: solid; font-size: 13px; margin-bottom: 20px; }
+      a { color: #f5a0c4; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Emergency withdrawal</h1>
+      <p class="sub">Take your USDG out of the Dark vault without Dark.</p>
+
+      <div class="warn">
+        <strong>This page never sends your recovery phrase anywhere.</strong> It runs entirely in this
+        browser and talks only to the blockchain endpoint you choose below. Keep a copy of this page's
+        folder and serve it from your own computer (see the README): if Dark's website and servers are
+        gone, this still works.
+      </div>
+
+      <div class="panel">
+        <label for="secret">Your 12 or 24 word recovery phrase, or a private key</label>
+        <textarea id="secret" spellcheck="false" autocomplete="off" placeholder="word word word …"></textarea>
+        <p class="note" style="margin-top:8px">Nothing you type here leaves this page.</p>
+
+        <div class="row" style="margin-top:16px">
+          <div>
+            <label for="chain">Network</label>
+            <select id="chain">
+              <option value="4663">Robinhood Chain (mainnet)</option>
+              <option value="46630" selected>Robinhood Chain (testnet)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rpc">Blockchain endpoint</label>
+            <input id="rpc" spellcheck="false" placeholder="leave blank for the public one" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:16px">
+          <div>
+            <label for="to">Send to (optional)</label>
+            <input id="to" spellcheck="false" placeholder="your own address" />
+          </div>
+          <div>
+            <label for="amount">Amount (optional)</label>
+            <input id="amount" spellcheck="false" placeholder="everything" />
+          </div>
+        </div>
+
+        <button id="check" class="ghost">Check my balance</button>
+        <button id="go" disabled>Withdraw</button>
+        <pre id="out">Ready.</pre>
+      </div>
+
+      <p class="note">
+        This page is open source and reproducible. Proving happens on your device and can take a few
+        seconds — that is the cryptography, not a network call.
+      </p>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

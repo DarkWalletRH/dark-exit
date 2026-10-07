@@ -111,7 +111,7 @@ release tags produces byte-identical output, which you can compare with the rele
 noirup --version 1.0.0-beta.22
 
 # 2. The circuits, compiled from the contracts repository
-git clone --depth 1 --branch v1.0.2 https://github.com/DarkWalletRH/dark-contracts.git
+git clone --depth 1 --branch v1.0.3 https://github.com/DarkWalletRH/dark-contracts.git
 (cd dark-contracts/circuits && nargo compile)
 
 # 3. The reference string (8 MiB of G1 points and the G2 point)
@@ -119,7 +119,7 @@ curl -fsSL -r 0-8388607 https://crs.aztec-cdn.foundation/g1.dat | head -c 838860
 curl -fsSL https://crs.aztec-cdn.foundation/g2.dat > dark-contracts/circuits/srs/g2.dat
 
 # 4. The page
-git clone --branch v1.0.1 https://github.com/DarkWalletRH/dark-exit.git
+git clone --branch v1.0.2 https://github.com/DarkWalletRH/dark-exit.git
 cd dark-exit
 npm ci
 DARK_CIRCUITS_SRC="$PWD/../dark-contracts/circuits" npm run web:build    # writes dist-web/
@@ -156,7 +156,7 @@ only requests are to the page's own origin and to the selected endpoint.
 ### Install
 
 ```bash
-git clone --branch v1.0.1 https://github.com/DarkWalletRH/dark-exit.git
+git clone --branch v1.0.2 https://github.com/DarkWalletRH/dark-exit.git
 cd dark-exit
 npm ci
 npm run build          # tsc → dist/
@@ -168,7 +168,7 @@ against the circuits from the contracts repository:
 ```bash
 noirup --version 1.0.0-beta.22
 bbup --version 5.0.0-nightly.20260522
-git clone --depth 1 --branch v1.0.2 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
+git clone --depth 1 --branch v1.0.3 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
 export DARK_CIRCUITS_DIR="$PWD/../dark-contracts/circuits"
 ```
 
@@ -258,7 +258,7 @@ rejection of a mistyped phrase by its checksum.
 
 ## Status
 
-Version 1.0.1. The contracts Dark Exit targets are **pre-audit** and run under launch caps; see
+Version 1.0.2. The contracts Dark Exit targets are **pre-audit** and run under launch caps; see
 [`dark-contracts`](https://github.com/DarkWalletRH/dark-contracts) for the current state.
 
 ## Security

@@ -1,7 +1,7 @@
 {
   "name": "@darkwalletrh/dark-exit",
-  "version": "1.0.0",
-  "description": "Withdraw your USDG from the Dark vault without Dark. Talks to one JSON-RPC endpoint of your choosing and to nothing else.",
+  "version": "1.0.1",
+  "description": "Withdraw your USDG from the Dark vault with every Dark server switched off, using only your recovery phrase and an RPC endpoint you choose.",
   "license": "MIT OR Apache-2.0",
   "type": "module",
   "bin": {
@@ -30,7 +30,7 @@
     "@noble/hashes": "^1.8.0",
     "@scure/bip32": "^2.4.0",
     "@scure/bip39": "^2.4.0",
-    "@darkwalletrh/dark-sdk": "github:DarkWalletRH/dark-sdk#v0.4.1"
+    "@darkwalletrh/dark-sdk": "github:DarkWalletRH/dark-sdk#v0.4.2"
   },
   "peerDependencies": {
     "viem": "^2"

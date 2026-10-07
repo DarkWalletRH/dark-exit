@@ -92,7 +92,7 @@ export function secretToPrivateKey(secret: string, accountIndex = 0): Hex {
  * the one before, so a corrupted hint or a hostile sender cannot strand the funds.
  */
 export async function exit(opts: ExitOptions): Promise<ExitResult> {
-  const chainId = opts.chainId ?? 46630;
+  const chainId = opts.chainId ?? 4663;
   const say = opts.log ?? (() => {});
 
   if (!isDeployed(chainId)) {
@@ -121,7 +121,10 @@ export async function exit(opts: ExitOptions): Promise<ExitResult> {
 
   const snapshot = await client.sync();
   if (!snapshot.registryKey) {
-    throw new Error('this account is not registered with the vault, so it holds no private balance');
+    throw new Error(
+      `this account is not registered with the vault on chain ${chainId}, so it holds no private balance there`
+        + ` (if you used the other network, pass --chain ${chainId === 4663 ? 46630 : 4663})`,
+    );
   }
 
   let balances = await client.getBalances(snapshot);

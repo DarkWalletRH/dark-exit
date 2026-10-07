@@ -2,16 +2,39 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // The command-line front door. Reads the secret from stdin or an env var, NEVER from an argument —
 // arguments land in shell history and in the process list, where other users on the machine can read
-// them.
+// them. At a terminal the secret is typed with echo off, so it never lands in the scrollback either.
 import { createInterface } from 'node:readline';
 import { exit as darkExit, DERIVATION_PATH } from './index.js';
 
+const FLAGS_WITH_VALUE = new Set(['chain', 'rpc', 'to', 'amount', 'account']);
+const FLAGS_BARE = new Set(['dry-run', 'help', 'h']);
+
+// Every argument must be a flag this tool knows. A typo (`--dryrun`) must not quietly become a
+// real withdrawal, and a secret pasted as an argument must not be echoed back by mistake.
 const args = process.argv.slice(2);
+const given = new Map<string, string | true>();
+for (let i = 0; i < args.length; i++) {
+  const a = args[i]!;
+  const name = a === '-h' ? 'h' : a.startsWith('--') ? a.slice(2) : null;
+  if (name === null || !(FLAGS_WITH_VALUE.has(name) || FLAGS_BARE.has(name))) {
+    console.error(`dark-exit: argument ${i + 1} is not an option this tool knows (see --help)`);
+    process.exit(2);
+  }
+  if (FLAGS_BARE.has(name)) given.set(name, true);
+  else {
+    const value = args[++i];
+    if (value === undefined || value.startsWith('--')) {
+      console.error(`dark-exit: --${name} needs a value`);
+      process.exit(2);
+    }
+    given.set(name, value);
+  }
+}
 const flag = (name: string): string | undefined => {
-  const i = args.indexOf(`--${name}`);
-  return i >= 0 ? args[i + 1] : undefined;
+  const v = given.get(name);
+  return typeof v === 'string' ? v : undefined;
 };
-const has = (name: string) => args.includes(`--${name}`);
+const has = (name: string) => given.has(name);
 
 if (has('help') || has('h')) {
   console.log(`dark-exit — withdraw your USDG from the Dark vault without Dark.
@@ -19,10 +42,11 @@ if (has('help') || has('h')) {
   dark-exit [options]
 
 Your secret is read from the DARK_SECRET environment variable, or from stdin if that
-is unset. It is never accepted as a command-line argument: arguments are visible in
-your shell history and to every other user on the machine.
+is unset (typing is hidden at a terminal). It is never accepted as a command-line
+argument: arguments are visible in your shell history and to every other user on the
+machine.
 
-  --chain <id>        4663 mainnet, 46630 testnet (default 46630)
+  --chain <id>        4663 mainnet (default), 46630 testnet
   --rpc <url>         any JSON-RPC endpoint. Default: the chain's public one.
                       Nothing here talks to a Dark server, ever.
   --to <0x…>          where the USDG goes. Default: your own address.
@@ -33,19 +57,55 @@ your shell history and to every other user on the machine.
 
 Path: ${DERIVATION_PATH}/<n>
 
-  export DARK_SECRET="twelve words …"   &&  dark-exit --chain 46630
-  echo "0x<private key>" | dark-exit --dry-run
+  dark-exit --dry-run                      (prompts for the secret; sends nothing)
+  dark-exit                                (prompts, then withdraws everything)
+  DARK_SECRET="$(cat phrase.txt)" dark-exit   (from a file; the phrase is not on the command line)
 `);
   process.exit(0);
 }
 
+/** Reads one line from the terminal with echo off, so the phrase never lands in the scrollback. */
+function promptHidden(): Promise<string> {
+  process.stderr.write(
+    'Paste your 12/24 words or private key, then press Enter. Typing is hidden.\n' +
+      '(nothing is sent anywhere — the key stays on this machine)\n> ',
+  );
+  return new Promise((resolve, reject) => {
+    const stdin = process.stdin;
+    let buf = '';
+    const cleanup = () => {
+      stdin.setRawMode(false);
+      stdin.pause();
+      stdin.off('data', onData);
+      process.stderr.write('\n');
+    };
+    const onData = (chunk: string) => {
+      for (const ch of chunk) {
+        if (ch === '\u0003') {
+          cleanup();
+          return reject(new Error('cancelled'));
+        }
+        if (ch === '\r' || ch === '\n') {
+          cleanup();
+          return resolve(buf.trim());
+        }
+        if (ch === '\u007f' || ch === '\b') buf = buf.slice(0, -1);
+        else buf += ch;
+      }
+    };
+    stdin.setRawMode(true);
+    stdin.setEncoding('utf8');
+    stdin.resume();
+    stdin.on('data', onData);
+  });
+}
+
 async function readSecret(): Promise<string> {
   const fromEnv = process.env.DARK_SECRET;
+  // Scrubbed before the prover runs: nargo and bb are child processes and would inherit it.
+  delete process.env.DARK_SECRET;
   if (fromEnv && fromEnv.trim()) return fromEnv.trim();
-  if (process.stdin.isTTY) {
-    console.error('Paste your 12/24 words or private key, then press Enter.');
-    console.error('(nothing is sent anywhere — the key stays on this machine)\n');
-  }
+  if (process.stdin.isTTY) return promptHidden();
   const rl = createInterface({ input: process.stdin, terminal: false });
   for await (const line of rl) {
     if (line.trim()) {

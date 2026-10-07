@@ -111,7 +111,7 @@ release tags produces byte-identical output, which you can compare with the rele
 noirup --version 1.0.0-beta.22
 
 # 2. The circuits, compiled from the contracts repository
-git clone --depth 1 --branch v1.0.1 https://github.com/DarkWalletRH/dark-contracts.git
+git clone --depth 1 --branch v1.0.2 https://github.com/DarkWalletRH/dark-contracts.git
 (cd dark-contracts/circuits && nargo compile)
 
 # 3. The reference string (8 MiB of G1 points and the G2 point)
@@ -119,7 +119,7 @@ curl -fsSL -r 0-8388607 https://crs.aztec-cdn.foundation/g1.dat | head -c 838860
 curl -fsSL https://crs.aztec-cdn.foundation/g2.dat > dark-contracts/circuits/srs/g2.dat
 
 # 4. The page
-git clone --branch v1.0.0 https://github.com/DarkWalletRH/dark-exit.git
+git clone --branch v1.0.1 https://github.com/DarkWalletRH/dark-exit.git
 cd dark-exit
 npm ci
 DARK_CIRCUITS_SRC="$PWD/../dark-contracts/circuits" npm run web:build    # writes dist-web/
@@ -156,7 +156,7 @@ only requests are to the page's own origin and to the selected endpoint.
 ### Install
 
 ```bash
-git clone --branch v1.0.0 https://github.com/DarkWalletRH/dark-exit.git
+git clone --branch v1.0.1 https://github.com/DarkWalletRH/dark-exit.git
 cd dark-exit
 npm ci
 npm run build          # tsc → dist/
@@ -168,7 +168,7 @@ against the circuits from the contracts repository:
 ```bash
 noirup --version 1.0.0-beta.22
 bbup --version 5.0.0-nightly.20260522
-git clone --depth 1 --branch v1.0.1 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
+git clone --depth 1 --branch v1.0.2 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
 export DARK_CIRCUITS_DIR="$PWD/../dark-contracts/circuits"
 ```
 
@@ -180,19 +180,18 @@ to Dark.
 ### Run
 
 ```bash
-read -rs DARK_SECRET && export DARK_SECRET    # paste the phrase; nothing is echoed or saved to history
-node dist/cli.js --chain 4663 --dry-run         # read the account and show what would happen
-node dist/cli.js --chain 4663                   # apply pending transfers, prove, withdraw
-unset DARK_SECRET
+node dist/cli.js --dry-run    # prompts for the phrase (typing is hidden), reads the account, shows the plan
+node dist/cli.js              # the same, then applies pending transfers, proves and withdraws
 ```
 
 The secret is read from the `DARK_SECRET` environment variable or, when that is unset, from
-standard input. It is never accepted as a command-line argument, because arguments are recorded in
-shell history and are visible to other users in the process list.
+standard input (at a terminal the prompt hides what you type). It is never accepted as a
+command-line argument, because arguments are recorded in shell history and are visible to other
+users in the process list. Unknown arguments are refused rather than ignored.
 
 | Option | Meaning |
 |---|---|
-| `--chain <id>` | `4663` (mainnet) or `46630` (testnet). Default: `46630`. **Pass `--chain 4663` for mainnet funds.** |
+| `--chain <id>` | `4663` (mainnet, the default) or `46630` (testnet). |
 | `--rpc <url>` | Any JSON-RPC endpoint. Default: the chain's public endpoint. |
 | `--to <0x…>` | Destination address. Default: the account's own address. |
 | `--amount <n>` | A decimal USDG amount with at most 6 decimals, for example `12.5`. Default: the full available balance. |
@@ -219,8 +218,8 @@ Your recovery phrase controls your funds. Anyone who learns it can take them, wi
 - **Use a device you trust.** Avoid shared or public computers. Close other browser tabs and
   extensions you do not need while the page is open.
 - **Keep it out of persistent storage.** Do not paste the phrase into a command line, a file, a
-  chat or a notes application. With the CLI, use `read -rs` or standard input as shown above, then
-  `unset DARK_SECRET`.
+  chat or a notes application. With the CLI, let the tool prompt you (typing is hidden) or pipe the
+  phrase on standard input; if you do export `DARK_SECRET`, `unset` it afterwards.
 - **Check before you withdraw.** Run `--dry-run`, or *Check my balance* on the page, and confirm
   the account address and balance before sending anything.
 - **Choose the destination deliberately.** By default the funds return to the account's own
@@ -259,7 +258,7 @@ rejection of a mistyped phrase by its checksum.
 
 ## Status
 
-Version 1.0.0. The contracts Dark Exit targets are **pre-audit** and run under launch caps; see
+Version 1.0.1. The contracts Dark Exit targets are **pre-audit** and run under launch caps; see
 [`dark-contracts`](https://github.com/DarkWalletRH/dark-contracts) for the current state.
 
 ## Security

@@ -111,7 +111,7 @@ release tags produces byte-identical output, which you can compare with the rele
 noirup --version 1.0.0-beta.22
 
 # 2. The circuits, compiled from the contracts repository
-git clone --depth 1 --branch v1.0.3 https://github.com/DarkWalletRH/dark-contracts.git
+git clone --depth 1 --branch v1.0.4 https://github.com/DarkWalletRH/dark-contracts.git
 (cd dark-contracts/circuits && nargo compile)
 
 # 3. The reference string (8 MiB of G1 points and the G2 point)
@@ -168,7 +168,7 @@ against the circuits from the contracts repository:
 ```bash
 noirup --version 1.0.0-beta.22
 bbup --version 5.0.0-nightly.20260522
-git clone --depth 1 --branch v1.0.3 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
+git clone --depth 1 --branch v1.0.4 https://github.com/DarkWalletRH/dark-contracts.git ../dark-contracts
 export DARK_CIRCUITS_DIR="$PWD/../dark-contracts/circuits"
 ```
 

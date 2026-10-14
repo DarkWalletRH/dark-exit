@@ -30,7 +30,9 @@ for (const name of ['dark_register', 'dark_transfer', 'dark_withdraw']) {
     console.error(`[prepare-assets] ${name} ACIR is ${got}, manifest says ${want} — rebuild the circuits.`);
     process.exit(1);
   }
-  writeFileSync(join(OUT, `${name}.json`), JSON.stringify({ bytecode: acir.bytecode }));
+  // noir_js needs the ABI to encode the witness; without it every proof fails before it starts.
+  // Debug symbols and the file map are dropped (local paths, not needed to prove).
+  writeFileSync(join(OUT, `${name}.json`), JSON.stringify({ noir_version: acir.noir_version, abi: acir.abi, bytecode: acir.bytecode }));
   console.log(`[prepare-assets] ${name} ✓ ${got.slice(0, 12)}…`);
 }
 

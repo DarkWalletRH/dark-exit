@@ -1,6 +1,6 @@
 {
   "name": "@darkwalletrh/dark-exit",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Withdraw your USDG from the Dark vault with every Dark server switched off, using only your recovery phrase and an RPC endpoint you choose.",
   "license": "MIT OR Apache-2.0",
   "type": "module",
